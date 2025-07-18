@@ -1,0 +1,9 @@
+apiVersion: sijoma.sijoma.io/v1alpha1
+kind: EncryptionKey
+metadata:
+  labels:
+    app.kubernetes.io/name: key-encryption-granter
+    app.kubernetes.io/managed-by: kustomize
+  name: encryptionkey-sample
+spec:
+  # TODO(user): Add fields here

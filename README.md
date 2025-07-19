@@ -82,10 +82,10 @@ metadata:
     app.kubernetes.io/name: key-encryption-granter
     app.kubernetes.io/managed-by: kustomize
   name: encryptionkey-sample
-  namespace: default
 spec:
-
-spec:
+  AccountID: "arn:aws:iam::213123123:role/example-role"
+  KeyID: "arn:aws:kms:us-east-1:123456789012:key/example-key-id"
+  KubernetesServiceAccount: "example-sa"
 EOF
 ```
 

@@ -5,6 +5,12 @@ metadata:
   name: manager-role
 rules:
 - apiGroups:
+  - authentication.k8s.io
+  resources:
+  - serviceaccounts/token
+  verbs:
+  - create
+- apiGroups:
   - sijoma.sijoma.io
   resources:
   - encryptionkeys

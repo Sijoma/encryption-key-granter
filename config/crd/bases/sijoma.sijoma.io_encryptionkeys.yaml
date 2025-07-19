@@ -39,11 +39,61 @@ spec:
           spec:
             description: EncryptionKeySpec defines the desired state of EncryptionKey.
             properties:
+              AccountID:
+                type: string
               KeyID:
+                type: string
+              KubernetesServiceAccount:
                 type: string
             type: object
           status:
             description: EncryptionKeyStatus defines the observed state of EncryptionKey.
+            properties:
+              arn:
+                description: KeyMetadata contains metadata about the KMS key
+                type: string
+              cloudHsmClusterId:
+                type: string
+              creationDate:
+                format: date-time
+                type: string
+              customKeyStoreId:
+                type: string
+              customerMasterKeySpec:
+                type: string
+              deletionDate:
+                format: date-time
+                type: string
+              description:
+                type: string
+              enabled:
+                type: boolean
+              encryptionAlgorithms:
+                items:
+                  type: string
+                type: array
+              keyManager:
+                type: string
+              keySpec:
+                type: string
+              keyState:
+                type: string
+              keyUsage:
+                type: string
+              lastReconciledTime:
+                format: date-time
+                type: string
+              multiRegion:
+                type: boolean
+              origin:
+                type: string
+              signingAlgorithms:
+                items:
+                  type: string
+                type: array
+              validTo:
+                format: date-time
+                type: string
             type: object
         type: object
     served: true

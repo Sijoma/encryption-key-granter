@@ -25,13 +25,32 @@ import (
 
 // EncryptionKeySpec defines the desired state of EncryptionKey.
 type EncryptionKeySpec struct {
-	KeyID string `json:"KeyID,omitempty"`
+	KeyID                    string `json:"KeyID,omitempty"`
+	AccountID                string `json:"AccountID,omitempty"`
+	KubernetesServiceAccount string `json:"KubernetesServiceAccount,omitempty"`
 }
 
 // EncryptionKeyStatus defines the observed state of EncryptionKey.
 type EncryptionKeyStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	LastReconciledTime *metav1.Time `json:"lastReconciledTime,omitempty"`
+	// KeyMetadata contains metadata about the KMS key
+	Arn                   string       `json:"arn,omitempty"`
+	CreationDate          *metav1.Time `json:"creationDate,omitempty"`
+	Description           string       `json:"description,omitempty"`
+	Enabled               bool         `json:"enabled,omitempty"`
+	KeyState              string       `json:"keyState,omitempty"`
+	KeyUsage              string       `json:"keyUsage,omitempty"`
+	Origin                string       `json:"origin,omitempty"`
+	DeletionDate          *metav1.Time `json:"deletionDate,omitempty"`
+	ValidTo               *metav1.Time `json:"validTo,omitempty"`
+	CustomKeyStoreId      string       `json:"customKeyStoreId,omitempty"`
+	CloudHsmClusterId     string       `json:"cloudHsmClusterId,omitempty"`
+	KeyManager            string       `json:"keyManager,omitempty"`
+	CustomerMasterKeySpec string       `json:"customerMasterKeySpec,omitempty"`
+	KeySpec               string       `json:"keySpec,omitempty"`
+	EncryptionAlgorithms  []string     `json:"encryptionAlgorithms,omitempty"`
+	SigningAlgorithms     []string     `json:"signingAlgorithms,omitempty"`
+	MultiRegion           bool         `json:"multiRegion,omitempty"`
 }
 
 // +kubebuilder:object:root=true

@@ -13,7 +13,7 @@ import (
 )
 
 type AwsKMS struct {
-	//"arn:aws:iam::095352988152:role/e2e-example-cluster"
+	// "arn:aws:iam::095352988152:role/e2e-example-cluster"
 	tenantRoleARN string
 	// "arn:aws:kms:eu-north-1:142755254688:key/22de90f5-8345-42b7-9916-5119ef7afbcc"
 	keyARN          string

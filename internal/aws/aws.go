@@ -25,7 +25,7 @@ type AwsKMS struct {
 }
 
 type TokenProvider interface {
-	GetToken(ctx context.Context, audience string) (string, error)
+	GetToken(ctx context.Context, targetNamespace, k8sServiceAccountName, audience string) (string, error)
 }
 
 // Option is a function that configures an AwsKMS instance
@@ -106,8 +106,8 @@ func NewAwsKMS(opts ...Option) AwsKMS {
 	return awsKMS
 }
 
-func (a AwsKMS) DescribeKey(ctx context.Context) (*kms.DescribeKeyOutput, error) {
-	webIdentityToken, err := a.token.GetToken(ctx, "sts.amazonaws.com")
+func (a AwsKMS) DescribeKey(ctx context.Context, targetNamespace, k8sServiceAccountName string) (*kms.DescribeKeyOutput, error) {
+	webIdentityToken, err := a.token.GetToken(ctx, targetNamespace, k8sServiceAccountName, "sts.amazonaws.com")
 	if err != nil {
 		return nil, fmt.Errorf("failed to get web identity token: %w", err)
 	}

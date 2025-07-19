@@ -25,7 +25,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes"
-	v1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/utils/ptr"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -39,8 +38,14 @@ import (
 // EncryptionKeyReconciler reconciles a EncryptionKey object
 type EncryptionKeyReconciler struct {
 	client.Client
-	corev1 v1.CoreV1Interface
+	tokenProvider
 	Scheme *runtime.Scheme
+}
+
+// This does a K8s TokenRequest to get the token for the service account, we can also pass the audience
+// for example to query cloud APIs of AWS.
+type tokenProvider interface {
+	GetToken(ctx context.Context, targetNamespace, k8sServiceAccountName, audience string) (string, error)
 }
 
 // +kubebuilder:rbac:groups=sijoma.sijoma.io,resources=encryptionkeys,verbs=get;list;watch;create;update;patch;delete
@@ -65,20 +70,14 @@ func (r *EncryptionKeyReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 		return ctrl.Result{}, err
 	}
 
-	tokenProvider := tokenprovider.NewK8s(
-		encryptionKey.Namespace,
-		encryptionKey.Spec.KubernetesServiceAccount,
-		r.corev1,
-	)
-
 	awskms := aws2.NewAwsKMS(
 		aws2.WithTenantRoleARN(encryptionKey.Spec.AccountID),
 		aws2.WithKeyARN(encryptionKey.Spec.KeyID),
 		aws2.WithRoleSessionName("encryption-observer"),
-		aws2.WithTokenProvider(tokenProvider),
+		aws2.WithTokenProvider(r.tokenProvider),
 	)
 
-	info, err := awskms.DescribeKey(ctx)
+	info, err := awskms.DescribeKey(ctx, encryptionKey.Namespace, encryptionKey.Spec.KubernetesServiceAccount)
 	if err != nil {
 		logger.Error(err, "Failed to describe KMS key")
 		return ctrl.Result{}, fmt.Errorf("failed to describe KMS key: %w", err)
@@ -107,7 +106,8 @@ func (r *EncryptionKeyReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	if err != nil {
 		return fmt.Errorf("EncryptionKeyReconciler: failed to create kubernetes config: %w", err)
 	}
-	r.corev1 = cfg.CoreV1()
+
+	r.tokenProvider = tokenprovider.NewK8s(cfg.CoreV1())
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&sijomav1alpha1.EncryptionKey{}).
 		Named("encryptionkey").

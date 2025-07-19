@@ -37,12 +37,9 @@ jobs:
           path: |
             ~/.cache/go-build
             ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.mod', '**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
-
-      - name: Download Go modules
-        run: go mod download
 
       - name: GoReleaser Action
         uses: goreleaser/goreleaser-action@v6

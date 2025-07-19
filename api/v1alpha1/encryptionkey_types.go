@@ -25,8 +25,20 @@ import (
 
 // EncryptionKeySpec defines the desired state of EncryptionKey.
 type EncryptionKeySpec struct {
-	KeyID                    string `json:"KeyID,omitempty"`
-	AccountID                string `json:"AccountID,omitempty"`
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
+	// +kubebuilder:validation:MaxLength=2048
+	// KeyID is the identifier of the KMS key to be used for encryption.
+	KeyID string `json:"KeyID,omitempty"`
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
+	// +kubebuilder:validation:MaxLength=2048
+	// AccountID is the AWS account ID that will be assumed to access the KMS key.
+	AccountID string `json:"AccountID,omitempty"`
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
+	// +kubebuilder:validation:MaxLength=253
+	// KubernetesServiceAccount is the Kubernetes service account where we will request a token from.
 	KubernetesServiceAccount string `json:"KubernetesServiceAccount,omitempty"`
 }
 

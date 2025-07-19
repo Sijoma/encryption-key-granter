@@ -66,49 +66,28 @@ make uninstall
 make undeploy
 ```
 
-## Project Distribution
+## Install Key Encryption Granter
 
-Following the options to release and provide this solution to the users.
-
-### By providing a bundle with all YAML files
-
-1. Build the installer for the image built and published in the registry:
-
-```sh
-make build-installer IMG=<some-registry>/key-encryption-granter:tag
+```shell
+kubectl apply -f https://github.com/Sijoma/key-encryption-granter/releases/latest/download/install.yaml
 ```
 
-**NOTE:** The makefile target mentioned above generates an 'install.yaml'
-file in the dist directory. This file contains all the resources built
-with Kustomize, which are necessary to install this project without its
-dependencies.
-
-2. Using the installer
-
-Users can just run 'kubectl apply -f <URL for YAML BUNDLE>' to install
-the project, i.e.:
-
+5. Deploy OrchestrationCluster Resource
 ```sh
-kubectl apply -f https://raw.githubusercontent.com/<org>/key-encryption-granter/<tag or branch>/dist/install.yaml
+cat <<EOF | kubectl apply -f -
+apiVersion: sijoma.sijoma.io/v1alpha1
+kind: EncryptionKey
+metadata:
+  labels:
+    app.kubernetes.io/name: key-encryption-granter
+    app.kubernetes.io/managed-by: kustomize
+  name: encryptionkey-sample
+  namespace: default
+spec:
+
+spec:
+EOF
 ```
-
-### By providing a Helm Chart
-
-1. Build the chart using the optional helm plugin
-
-```sh
-kubebuilder edit --plugins=helm/v1-alpha
-```
-
-2. See that a chart was generated under 'dist/chart', and users
-can obtain this solution from there.
-
-**NOTE:** If you change the project, you need to update the Helm Chart
-using the same command above to sync the latest changes. Furthermore,
-if you create webhooks, you need to use the above command with
-the '--force' flag and manually ensure that any custom configuration
-previously added to 'dist/chart/values.yaml' or 'dist/chart/manager/manager.yaml'
-is manually re-applied afterwards.
 
 ## Contributing
 // TODO(user): Add detailed information on how you would like others to contribute to this project
@@ -132,4 +111,3 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-

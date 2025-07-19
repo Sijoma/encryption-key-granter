@@ -40,11 +40,27 @@ spec:
             description: EncryptionKeySpec defines the desired state of EncryptionKey.
             properties:
               AccountID:
+                description: AccountID is the AWS account ID that will be assumed
+                  to access the KMS key.
+                maxLength: 2048
+                minLength: 1
                 type: string
               KeyID:
+                description: KeyID is the identifier of the KMS key to be used for
+                  encryption.
+                maxLength: 2048
+                minLength: 1
                 type: string
               KubernetesServiceAccount:
+                description: KubernetesServiceAccount is the Kubernetes service account
+                  where we will request a token from.
+                maxLength: 253
+                minLength: 1
                 type: string
+            required:
+            - AccountID
+            - KeyID
+            - KubernetesServiceAccount
             type: object
           status:
             description: EncryptionKeyStatus defines the observed state of EncryptionKey.

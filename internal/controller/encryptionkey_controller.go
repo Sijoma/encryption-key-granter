@@ -77,7 +77,13 @@ func (r *EncryptionKeyReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 		aws2.WithTokenProvider(r.tokenProvider),
 	)
 
-	info, err := awskms.DescribeKey(ctx, encryptionKey.Namespace, encryptionKey.Spec.KubernetesServiceAccount)
+	ctxWithTimeout, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+	info, err := awskms.DescribeKey(
+		ctxWithTimeout,
+		encryptionKey.Namespace,
+		encryptionKey.Spec.KubernetesServiceAccount,
+	)
 	if err != nil {
 		logger.Error(err, "Failed to describe KMS key")
 		return ctrl.Result{}, fmt.Errorf("failed to describe KMS key: %w", err)

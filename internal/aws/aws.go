@@ -146,7 +146,7 @@ func (a AwsKMS) DescribeKey(ctx context.Context, targetNamespace, k8sServiceAcco
 		}
 	})
 
-	key, err := kmsClient.DescribeKey(context.Background(), &kms.DescribeKeyInput{KeyId: ptr.To(a.keyARN)})
+	key, err := kmsClient.DescribeKey(ctx, &kms.DescribeKeyInput{KeyId: ptr.To(a.keyARN)})
 	if err != nil {
 		return nil, fmt.Errorf("failed to describe key: %w", err)
 	}

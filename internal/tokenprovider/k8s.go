@@ -46,7 +46,7 @@ func (a *K8s) GetToken(ctx context.Context, targetNamespace, k8sServiceAccountNa
 	a.mu.Unlock()
 
 	if found && time.Until(entry.expiresAt) > 30*time.Second {
-		logger.Info("cache hit", "token", entry.token)
+		logger.Info("cache hit", "key", key)
 		return entry.token, nil
 	}
 

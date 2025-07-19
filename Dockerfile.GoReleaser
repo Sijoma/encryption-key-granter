@@ -1,4 +1,10 @@
+# Get certs
+FROM debian:bullseye-slim as certs
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
+
 FROM scratch
 COPY manager /manager
+COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 ENTRYPOINT ["/manager"]
 USER 65532:65532

@@ -23,11 +23,16 @@ COPY internal/ internal/
 # by leaving it empty we can ensure that the container and binary shipped on it will have the same platform.
 RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -o manager cmd/main.go
 
+# Copy the CA certificates to a separate stage
+FROM debian:bullseye-slim as certs
+RUN apt-get update && apt-get install -y ca-certificates
+
 # Use distroless as minimal base image to package the manager binary
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
 FROM gcr.io/distroless/static:nonroot
 WORKDIR /
 COPY --from=builder /workspace/manager .
+COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 USER 65532:65532
 
 ENTRYPOINT ["/manager"]

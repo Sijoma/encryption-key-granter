@@ -47,7 +47,9 @@ type EncryptionKeyReconciler struct {
 // +kubebuilder:rbac:groups=sijoma.sijoma.io,resources=encryptionkeys/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=sijoma.sijoma.io,resources=encryptionkeys/finalizers,verbs=update
 
-// +kubebuilder:rbac:groups=authentication.k8s.io,resources=serviceaccounts/token,verbs=create
+// Allow getting k8s service accounts, required to request tokens
+// +kubebuilder:rbac:groups="",resources=serviceaccounts,verbs=get
+// +kubebuilder:rbac:groups="",resources=serviceaccounts/token,verbs=create
 
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.21.0/pkg/reconcile

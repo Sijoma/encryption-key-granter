@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/kms"
 	"github.com/aws/aws-sdk-go-v2/service/sts"
@@ -111,16 +112,16 @@ func (a AwsKMS) DescribeKey(ctx context.Context) (*kms.DescribeKeyOutput, error)
 		return nil, fmt.Errorf("failed to get web identity token: %w", err)
 	}
 
-	options := sts.Options{
-		EndpointResolverV2: sts.NewDefaultEndpointResolverV2(),
-		DefaultsMode:       aws.DefaultsModeAuto,
+	cfg, err := config.LoadDefaultConfig(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("unable to load SDK config, %w", err)
 	}
 
-	if a.region != "" {
-		options.Region = a.region
-	}
-
-	stsClient := sts.New(options)
+	stsClient := sts.NewFromConfig(cfg, func(options *sts.Options) {
+		if a.region != "" {
+			options.Region = a.region
+		}
+	})
 	assumeRoleOutput, err := stsClient.AssumeRoleWithWebIdentity(context.Background(), &sts.AssumeRoleWithWebIdentityInput{
 		RoleArn:          ptr.To(a.tenantRoleARN),
 		RoleSessionName:  ptr.To(a.roleSessionName),
@@ -138,14 +139,12 @@ func (a AwsKMS) DescribeKey(ctx context.Context) (*kms.DescribeKeyOutput, error)
 		},
 	}
 
-	kmsOptions := kms.Options{
-		EndpointResolverV2: kms.NewDefaultEndpointResolverV2(),
-		Credentials:        creds}
-
-	if a.region != "" {
-		kmsOptions.Region = a.region
-	}
-	kmsClient := kms.New(kmsOptions)
+	kmsClient := kms.NewFromConfig(cfg, func(options *kms.Options) {
+		options.Credentials = creds
+		if a.region != "" {
+			options.Region = a.region
+		}
+	})
 
 	key, err := kmsClient.DescribeKey(context.Background(), &kms.DescribeKeyInput{KeyId: ptr.To(a.keyARN)})
 	if err != nil {

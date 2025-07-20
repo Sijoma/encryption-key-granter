@@ -107,7 +107,8 @@ func NewAwsKMS(opts ...Option) AwsKMS {
 }
 
 func (a AwsKMS) DescribeKey(ctx context.Context, targetNamespace, k8sServiceAccountName string) (*kms.DescribeKeyOutput, error) {
-	webIdentityToken, err := a.token.GetToken(ctx, targetNamespace, k8sServiceAccountName, "sts.amazonaws.com")
+	const awsStsAudience = "sts.amazonaws.com"
+	webIdentityToken, err := a.token.GetToken(ctx, targetNamespace, k8sServiceAccountName, awsStsAudience)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get web identity token: %w", err)
 	}

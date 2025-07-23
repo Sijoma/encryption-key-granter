@@ -123,7 +123,7 @@ func (a AwsKMS) DescribeKey(ctx context.Context, targetNamespace, k8sServiceAcco
 			options.Region = a.region
 		}
 	})
-	assumeRoleOutput, err := stsClient.AssumeRoleWithWebIdentity(context.Background(), &sts.AssumeRoleWithWebIdentityInput{
+	assumeRoleOutput, err := stsClient.AssumeRoleWithWebIdentity(ctx, &sts.AssumeRoleWithWebIdentityInput{
 		RoleArn:          ptr.To(a.tenantRoleARN),
 		RoleSessionName:  ptr.To(a.roleSessionName),
 		WebIdentityToken: aws.String(webIdentityToken),
